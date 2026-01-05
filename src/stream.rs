@@ -76,6 +76,7 @@ impl TfoStream {
     }
 
     /// Sets the linger duration of this socket by setting the SO_LINGER option.
+    #[deprecated = "`SO_LINGER` causes the socket to block the thread on drop"]
     pub fn set_linger(&self, dur: Option<Duration>) -> io::Result<()> {
         self.inner.set_linger(dur)
     }

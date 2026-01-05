@@ -3,7 +3,7 @@ use std::{
     io::{self, ErrorKind},
     mem,
     net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, TcpStream as StdTcpStream},
-    os::windows::io::{AsRawSocket, FromRawSocket, IntoRawSocket, RawSocket},
+    os::windows::io::{AsRawSocket, AsSocket, BorrowedSocket, FromRawSocket, IntoRawSocket, RawSocket},
     pin::Pin,
     ptr,
     task::{self, Poll, Waker},
@@ -452,6 +452,16 @@ impl AsRawSocket for TcpStream {
         match self.stream {
             TcpStreamOption::Connected(ref s) => s.as_raw_socket(),
             TcpStreamOption::Connecting { ref socket, .. } => socket.as_raw_socket(),
+            _ => unreachable!("stream connected without a TcpStream instance"),
+        }
+    }
+}
+
+impl AsSocket for TcpStream {
+    fn as_socket(&self) -> BorrowedSocket<'_> {
+        match self.stream {
+            TcpStreamOption::Connected(ref s) => s.as_socket(),
+            TcpStreamOption::Connecting { ref socket, .. } => socket.as_socket(),
             _ => unreachable!("stream connected without a TcpStream instance"),
         }
     }
