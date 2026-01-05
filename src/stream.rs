@@ -3,7 +3,10 @@
 #[cfg(unix)]
 use std::os::unix::io::{AsFd, AsRawFd, BorrowedFd, RawFd};
 #[cfg(windows)]
-use std::os::windows::io::{AsRawSocket, RawSocket};
+use std::{
+    borrow::Borrow,
+    os::windows::io::{AsRawSocket, AsSocket, BorrowedSocket, RawSocket},
+};
 use std::{
     io,
     net::SocketAddr,
@@ -146,5 +149,12 @@ impl AsRawFd for TfoStream {
 impl AsRawSocket for TfoStream {
     fn as_raw_socket(&self) -> RawSocket {
         self.inner.as_raw_socket()
+    }
+}
+
+#[cfg(windows)]
+impl AsSocket for TfoStream {
+    fn as_socket(&self) -> BorrowedSocket<'_> {
+        self.inner.as_socket()
     }
 }
